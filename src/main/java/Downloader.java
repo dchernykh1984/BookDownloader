@@ -4,9 +4,7 @@ import org.openqa.selenium.WebElement;
 
 import java.io.File;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
 
 /**
  * Created by Denis on 7/19/2017.
@@ -26,6 +24,11 @@ public class Downloader {
         }
     }
 
+    static void toTopOfMainPage() {
+        System.out.println("To top of page");
+        $(By.id("results-head")).scrollTo();
+    }
+
     public static void main(String [] args) {
         File currentDir = new File("SavedFiles");
         Configuration.browser = "chrome";
@@ -34,15 +37,19 @@ public class Downloader {
         open("https://digitalcollections.nypl.org/collections/the-vinkhuijzen-collection-of-military-uniforms#/?tab=navigation&roots=3:708df000-c532-012f-0fc1-58d385a7bc34");
         for(WebElement country: $$(By.xpath(PATH_COUNTRY_NAME))) {
             WebElement countryLink = $(By.xpath(String.format(TEMPLATE_COUNTRY_LINK, country.getAttribute("id"))));
+            toTopOfMainPage();
             countryLink.click();
+            System.out.println("Click county:" + countryLink.getText());
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             File countryDir = new File(currentDir.getAbsolutePath() + "\\" + countryLink.getText().replace(" ", ""));
             createNewDir(countryDir);
             for(WebElement city:$$(By.xpath(String.format(TEMPLATE_PATH_CITY_LINK, country.getAttribute("id"))))) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                System.out.println("\tClick city:" + city.getText());
+                toTopOfMainPage();
                 city.click();
                 File cityDir = new File(countryDir.getAbsolutePath() + "\\" + city.getText().replace(" ", ""));
                 createNewDir(cityDir);

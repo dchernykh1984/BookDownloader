@@ -19,7 +19,6 @@ public class Downloader {
     static String PATH_LINK_FORWARD = "//div[@class='pagination noscript']/div[@class='controls']/a[@class='next_page']";
     static String PATH_MORE_DOWNLOAD_LINK = "//div[@class='more-downloads-link']/a";
     static String PATH_HIRES_LINK = "//a[@class='deriv-link highres']";
-//    static String PATH_ORIGINAL_LINK = "//div[@class='option original download']/a";
 
     static void createNewDir(File currentDir) {
         if(!currentDir.exists()) {
@@ -44,14 +43,9 @@ public class Downloader {
             element.click();
             setSaveDirectory(directory);
             File savedPicture;
-//            if($(By.xpath(PATH_ORIGINAL_LINK)).exists() && $(By.xpath(PATH_ORIGINAL_LINK)).isDisplayed() && $(By.xpath(PATH_ORIGINAL_LINK)).isEnabled()) {
-//                savedPicture = $(By.xpath(PATH_ORIGINAL_LINK)).download();
-//            } else {
-//            $(By.id("item-capture-related-holder")).scrollTo();
             $(By.xpath(PATH_MORE_DOWNLOAD_LINK)).click();
-                savedPicture = $(By.xpath(PATH_HIRES_LINK)).download();
-//            }
-            File toPicture = new File(directory,savedPicture.getName());
+            savedPicture = $(By.xpath(PATH_HIRES_LINK)).download();
+            File toPicture = new File(directory,savedPicture.getName() + ".tiff");
             if(toPicture.exists()) {
                 toPicture.delete();
             }

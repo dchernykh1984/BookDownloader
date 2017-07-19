@@ -52,6 +52,13 @@ public class Downloader {
     }
 
     public static void downloadAllPhotos(String directory) throws IOException, InterruptedException {
+        if($$(By.xpath(PATH_IMAGE_LINK)).size() == new File(directory).listFiles().length) {
+            writeFailedDownload("Directory already downloaded: " + directory, false);
+            return;
+        }
+        for(File file: new File(directory).listFiles()) {
+            file.delete();
+        }
         for(WebElement element:$$(By.xpath(PATH_IMAGE_LINK))) {
             element.click();
             System.out.println("Number of threads: " + getNumberOfBrowsers());
@@ -92,10 +99,10 @@ public class Downloader {
                 File cityDir = new File(countryDir.getAbsolutePath(),city.getText().replace(" ", ""));
                 createNewDir(cityDir);
                 downloadAllPhotos(cityDir.getAbsolutePath());
-                while($(By.xpath(PATH_LINK_FORWARD)).isDisplayed() && $(By.xpath(PATH_LINK_FORWARD)).isEnabled()) {
+/*                while($(By.xpath(PATH_LINK_FORWARD)).isDisplayed() && $(By.xpath(PATH_LINK_FORWARD)).isEnabled()) {
                     $(By.xpath(PATH_LINK_FORWARD)).click();
                     downloadAllPhotos(cityDir.getAbsolutePath());
-                }
+                }*/
             }
 
 

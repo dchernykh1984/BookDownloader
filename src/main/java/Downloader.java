@@ -14,7 +14,7 @@ import static com.codeborne.selenide.Selenide.open;
 public class Downloader {
     static String PATH_COUNTRY_NAME = "//div[@id='navigation']//li[contains(@class,'branch sub-collections')]";
     static String TEMPLATE_COUNTRY_LINK = "//li[@id='%s']/a";
-    static String TEMPLATE_PATH_CITY_LINK = "//li[@id='%s']/ul/li[@class='branch ']/a";
+    static String TEMPLATE_PATH_CITY_LINK = "//li[@id='%s']/ul/li[contains(@class,'branch')]/a";
 
     static void createNewDir(File currentDir) {
         if(!currentDir.exists()) {
@@ -35,11 +35,16 @@ public class Downloader {
         for(WebElement country: $$(By.xpath(PATH_COUNTRY_NAME))) {
             WebElement countryLink = $(By.xpath(String.format(TEMPLATE_COUNTRY_LINK, country.getAttribute("id"))));
             countryLink.click();
-            File countryDir = new File(currentDir.getAbsolutePath() + "\\" + countryLink.getText());
+            File countryDir = new File(currentDir.getAbsolutePath() + "\\" + countryLink.getText().replace(" ", ""));
             createNewDir(countryDir);
             for(WebElement city:$$(By.xpath(String.format(TEMPLATE_PATH_CITY_LINK, country.getAttribute("id"))))) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 city.click();
-                File cityDir = new File(countryDir.getAbsolutePath() + "\\" + city.getText());
+                File cityDir = new File(countryDir.getAbsolutePath() + "\\" + city.getText().replace(" ", ""));
                 createNewDir(cityDir);
             }
 

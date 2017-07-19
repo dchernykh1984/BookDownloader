@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.close;
 import static com.codeborne.selenide.Selenide.open;
 
 /**
@@ -45,8 +46,16 @@ public class ImageDownloader implements Runnable {
             }
             Files.copy(savedPicture.toPath(), toPicture.toPath());
             savedPicture.delete();
+            System.out.println("Image downloaded: " +toPicture.getAbsolutePath());
         } catch (IOException e) {
+            try {
+                Downloader.writeFailedDownload("Failed to download image: " + url);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
+        } finally {
+            Downloader.browserStopped();
         }
     }
 }

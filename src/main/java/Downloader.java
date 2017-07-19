@@ -3,8 +3,7 @@ import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 import static com.codeborne.selenide.Selenide.*;
 
@@ -17,6 +16,24 @@ public class Downloader {
     static String TEMPLATE_PATH_CITY_LINK = "//li[@id='%s']/ul/li[contains(@class,'branch')]/a";
     static String PATH_IMAGE_LINK = "//ul[@id='results-list']/li/div[@class='item']/a";
     static String PATH_LINK_FORWARD = "//div[@class='pagination noscript']/div[@class='controls']/a[@class='next_page']";
+    static Integer numberOfBrowsers = 0;
+    static Integer MAX_NUMBER_OF_BROWSERS = 4;
+    public static synchronized Integer getNumberOfBrowsers() {
+        return numberOfBrowsers;
+    }
+
+    public static synchronized void addBrowserNumber() {
+        numberOfBrowsers++;
+    }
+
+    public static synchronized void browserStopped() {
+        numberOfBrowsers--;
+    }
+    public static synchronized void writeFailedDownload(String message) throws IOException {
+        FileWriter fr = new FileWriter(new File("errors.txt"), true);
+        fr.write(message + "\n");
+        fr.close();
+    }
 
     static void createNewDir(File currentDir) {
         if(!currentDir.exists()) {
@@ -36,9 +53,14 @@ public class Downloader {
     public static void downloadAllPhotos(String directory) throws IOException, InterruptedException {
         for(WebElement element:$$(By.xpath(PATH_IMAGE_LINK))) {
             element.click();
+            System.out.println("Number of threads: " + getNumberOfBrowsers());
+            while(getNumberOfBrowsers() >= MAX_NUMBER_OF_BROWSERS) {
+                System.out.println("Number of threads: " + getNumberOfBrowsers());
+                Thread.sleep(1000);
+            }
             new Thread(new ImageDownloader(directory, WebDriverRunner.url())).start();
+            addBrowserNumber();
             back();
-            Thread.sleep(2000);
         }
     }
 

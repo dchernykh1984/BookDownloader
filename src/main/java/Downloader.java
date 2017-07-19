@@ -30,7 +30,7 @@ public class Downloader {
         Configuration.browser = "chrome";
         System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 
-        open("https://digitalcollections.nypl.org/collections/the-vinkhuijzen-collection-of-military-uniforms#/?tab=navigation&roots=5246dff0-c52f-012f-a661-58d385a7bc34");
+        open("https://digitalcollections.nypl.org/collections/the-vinkhuijzen-collection-of-military-uniforms#/?tab=navigation&roots=3:708df000-c532-012f-0fc1-58d385a7bc34");
         for(WebElement country: $$(By.xpath(PATH_COUNTRY_LINK))) {
             country.click();
             File countryDir = new File(currentDir.getAbsolutePath() + "//" + country.getText());

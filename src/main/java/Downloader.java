@@ -4,7 +4,6 @@ import org.openqa.selenium.WebElement;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import static com.codeborne.selenide.Selenide.*;
 
@@ -17,8 +16,6 @@ public class Downloader {
     static String TEMPLATE_PATH_CITY_LINK = "//li[@id='%s']/ul/li[contains(@class,'branch')]/a";
     static String PATH_IMAGE_LINK = "//ul[@id='results-list']/li/div[@class='item']/a";
     static String PATH_LINK_FORWARD = "//div[@class='pagination noscript']/div[@class='controls']/a[@class='next_page']";
-    static String PATH_MORE_DOWNLOAD_LINK = "//div[@class='more-downloads-link']/a";
-    static String PATH_HIRES_LINK = "//a[@class='deriv-link highres']";
 
     static void createNewDir(File currentDir) {
         if(!currentDir.exists()) {
@@ -35,25 +32,13 @@ public class Downloader {
         $(By.id("results-head")).scrollTo();
     }
 
-    public static void setSaveDirectory(String directory) {
-    }
-
-    public static void downloadAllPhotos(String directory) throws IOException {
+    public static void downloadAllPhotos(String directory) throws IOException, InterruptedException {
         for(WebElement element:$$(By.xpath(PATH_IMAGE_LINK))) {
             element.click();
-            setSaveDirectory(directory);
-            File savedPicture;
-            $(By.xpath(PATH_MORE_DOWNLOAD_LINK)).click();
-            savedPicture = $(By.xpath(PATH_HIRES_LINK)).download();
-            File toPicture = new File(directory,savedPicture.getName() + ".tiff");
-            if(toPicture.exists()) {
-                toPicture.delete();
-            }
-            Files.copy(savedPicture.toPath(), toPicture.toPath());
-            savedPicture.delete();
+            new Thread(new ImageDownloader(directory)).start();
+            Thread.sleep(1000);
             back();
         }
-
     }
 
     public static void main(String [] args) throws IOException, InterruptedException {

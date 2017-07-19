@@ -17,7 +17,7 @@ public class Downloader {
     static String PATH_IMAGE_LINK = "//ul[@id='results-list']/li/div[@class='item']/a";
     static String PATH_LINK_FORWARD = "//div[@class='pagination noscript']/div[@class='controls']/a[@class='next_page']";
     static Integer numberOfBrowsers = 0;
-    static Integer MAX_NUMBER_OF_BROWSERS = 5;
+    static Integer MAX_NUMBER_OF_BROWSERS = 3;
     static long VERY_BIG_TIMEOUT = 600000;
     public static synchronized Integer getNumberOfBrowsers() {
         return numberOfBrowsers;

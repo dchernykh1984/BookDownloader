@@ -1,4 +1,5 @@
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -35,9 +36,9 @@ public class Downloader {
     public static void downloadAllPhotos(String directory) throws IOException, InterruptedException {
         for(WebElement element:$$(By.xpath(PATH_IMAGE_LINK))) {
             element.click();
-            new Thread(new ImageDownloader(directory)).start();
-            Thread.sleep(1000);
+            new Thread(new ImageDownloader(directory, WebDriverRunner.url())).start();
             back();
+            Thread.sleep(2000);
         }
     }
 

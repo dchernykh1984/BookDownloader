@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.close;
 import static com.codeborne.selenide.Selenide.open;
 
 /**
@@ -25,6 +24,7 @@ public class ImageDownloader implements Runnable {
 
     @Override
     public void run() {
+        boolean downloaded = false;
         try {
             Configuration.browser = "chrome";
             System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
@@ -46,15 +46,16 @@ public class ImageDownloader implements Runnable {
             }
             Files.copy(savedPicture.toPath(), toPicture.toPath());
             savedPicture.delete();
-            System.out.println("Image downloaded: " +toPicture.getAbsolutePath());
+            System.out.println("Image downloaded: " + toPicture.getAbsolutePath());
+            downloaded = true;
         } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
             try {
-                Downloader.writeFailedDownload("Failed to download image: " + url);
+                Downloader.writeFailedDownload("Image download: " + url + " to " + directory + (downloaded?" - success":" - failure"), !downloaded);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            e.printStackTrace();
-        } finally {
             Downloader.browserStopped();
         }
     }

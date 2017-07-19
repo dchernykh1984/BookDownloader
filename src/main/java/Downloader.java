@@ -17,7 +17,8 @@ public class Downloader {
     static String PATH_IMAGE_LINK = "//ul[@id='results-list']/li/div[@class='item']/a";
     static String PATH_LINK_FORWARD = "//div[@class='pagination noscript']/div[@class='controls']/a[@class='next_page']";
     static Integer numberOfBrowsers = 0;
-    static Integer MAX_NUMBER_OF_BROWSERS = 4;
+    static Integer MAX_NUMBER_OF_BROWSERS = 5;
+    static long VERY_BIG_TIMEOUT = 600000;
     public static synchronized Integer getNumberOfBrowsers() {
         return numberOfBrowsers;
     }
@@ -29,8 +30,8 @@ public class Downloader {
     public static synchronized void browserStopped() {
         numberOfBrowsers--;
     }
-    public static synchronized void writeFailedDownload(String message) throws IOException {
-        FileWriter fr = new FileWriter(new File("errors.txt"), true);
+    public static synchronized void writeFailedDownload(String message, boolean isError) throws IOException {
+        FileWriter fr = new FileWriter(new File(isError?"errors.txt":"success.txt"), true);
         fr.write(message + "\n");
         fr.close();
     }
@@ -66,8 +67,13 @@ public class Downloader {
 
     public static void main(String [] args) throws IOException, InterruptedException {
         File currentDir = new File("SavedFiles");
+        createNewDir(currentDir);
         Configuration.browser = "chrome";
         System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
+        Configuration.timeout = VERY_BIG_TIMEOUT;
+        Configuration.closeBrowserTimeoutMs = VERY_BIG_TIMEOUT;
+        Configuration.collectionsTimeout = VERY_BIG_TIMEOUT;
+        Configuration.openBrowserTimeoutMs = VERY_BIG_TIMEOUT;
 
         open("https://digitalcollections.nypl.org/collections/the-vinkhuijzen-collection-of-military-uniforms#/?tab=navigation&roots=3:708df000-c532-012f-0fc1-58d385a7bc34");
         for(WebElement country: $$(By.xpath(PATH_COUNTRY_NAME))) {
